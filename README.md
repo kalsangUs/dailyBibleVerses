@@ -13,6 +13,7 @@ Each visit surfaces a random verse from the World English Bible. Read it, save i
 - **Like** — keep a separate list of your favourites
 - **Sidebar navigation** — jump between Discover, Saved, and Liked with a clean collapsible nav
 - **Dark mode** — easy on the eyes day or night
+- **Google sign-in** — authenticate with your Google account to sync your saved and liked verses
 
 ## Running locally
 
@@ -22,10 +23,14 @@ npx convex dev   # start Convex backend (requires a free Convex account)
 npm run dev      # start Next.js dev server at http://localhost:3000
 ```
 
+You'll need a `.env.local` file with:
+- `NEXT_PUBLIC_CONVEX_URL` — your Convex deployment URL
+
 ## Tech Stack
 
-- [Next.js 16](https://nextjs.org) — App Router
-- [Tailwind CSS v4](https://tailwindcss.com)
-- [shadcn/ui](https://ui.shadcn.com) — UI components
-- [Convex](https://convex.dev) — backend database and serverless functions
+- [Next.js 16](https://nextjs.org) — App Router, React 19
+- [Tailwind CSS v4](https://tailwindcss.com) — utility-first styling
+- [shadcn/ui](https://ui.shadcn.com) — UI components built on Radix primitives
+- [Convex](https://convex.dev) — backend database, serverless functions, and authentication
+- [next-themes](https://github.com/pacocoursey/next-themes) — dark/light mode toggle
 - [bible-api.com](https://bible-api.com) — free Bible verse API (World English Bible, Public Domain)
