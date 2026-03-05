@@ -23,30 +23,54 @@ This is a Next.js 16 app using the App Router (`app/` directory), React 19, Tail
 - **Components**: shadcn/ui components in `components/ui/`. App-level components in `components/`.
 - **Path alias**: `@/*` maps to the project root.
 
+## Authentication
+
+Authentication uses `@convex-dev/auth` with Google OAuth.
+
+- **Provider config**: [convex/auth.ts](convex/auth.ts) — configures Google provider via `@auth/core/providers/google`
+- **Auth config**: [convex/auth.config.ts](convex/auth.config.ts) — JWT provider config pointing to `CONVEX_SITE_URL`
+- **HTTP routes**: [convex/http.ts](convex/http.ts) — registers auth HTTP routes on the Convex HTTP router
+- **Middleware**: [middleware.ts](middleware.ts) — protects `/saved` and `/liked` routes, redirecting unauthenticated users to `/signin`
+- **Client provider**: [app/ConvexClientProvider.tsx](app/ConvexClientProvider.tsx) — wraps app with `ConvexAuthNextjsProvider`
+- **Server provider**: `ConvexAuthNextjsServerProvider` wraps the root layout in [app/layout.tsx](app/layout.tsx)
+- **User query**: [convex/users.ts](convex/users.ts) — `me` query returns the current authenticated user or null
+
+Environment variables needed (in `.env.local`):
+- `NEXT_PUBLIC_CONVEX_URL` — Convex deployment URL
+
 ## Pages
 
-- `/` ([app/page.tsx](app/page.tsx)) — Home/Discover: fetches a random verse from bible-api.com on load; allows refreshing, saving, and liking the current verse. Client component using Convex mutations.
-- `/saved` ([app/saved/page.tsx](app/saved/page.tsx)) — Lists saved quotes from Convex `savedQuotes` table; supports deletion.
-- `/liked` ([app/liked/page.tsx](app/liked/page.tsx)) — Lists liked quotes from Convex `likedQuotes` table; supports unliking.
+- `/` ([app/page.tsx](app/page.tsx)) — Home/Discover: fetches a random verse from bible-api.com on load; allows refreshing, saving, and liking the current verse. Redirects to `/signin` if unauthenticated when saving/liking.
+- `/saved` ([app/saved/page.tsx](app/saved/page.tsx)) — Lists saved quotes from Convex `savedQuotes` table; supports deletion. Protected route.
+- `/liked` ([app/liked/page.tsx](app/liked/page.tsx)) — Lists liked quotes from Convex `likedQuotes` table; supports unliking. Protected route.
+- `/signin` ([app/signin/page.tsx](app/signin/page.tsx)) — Sign-in page with Google OAuth button.
 
-Navigation is via a collapsible sidebar (`components/app-sidebar.tsx`) using shadcn/ui Sidebar, toggled by `SidebarTrigger` in the layout.
+Navigation is via a collapsible sidebar ([components/app-sidebar.tsx](components/app-sidebar.tsx)) using shadcn/ui Sidebar, toggled by `SidebarTrigger` in the layout. Sidebar footer shows current user name/email with sign-out button when authenticated, or a sign-in link otherwise.
 
 ## Convex Schema
 
-Two tables defined in `convex/schema.ts`:
-- `savedQuotes` — `{ book, chapter, verse, text }`
-- `likedQuotes` — `{ book, chapter, verse, text }`
+Tables defined in `convex/schema.ts` (includes `authTables` from `@convex-dev/auth/server`):
+- `savedQuotes` — `{ userId, book, chapter, verse, text }` with `by_user` index on `userId`
+- `likedQuotes` — `{ userId, book, chapter, verse, text }` with `by_user` index on `userId`
+
+All quotes are scoped to the authenticated user via `userId` field.
 
 Functions in `convex/quotes.ts`:
-- `list` query — list saved quotes (desc)
-- `save` mutation — insert into savedQuotes
-- `remove` mutation — delete from savedQuotes
-- `listLiked` query — list liked quotes (desc)
-- `like` mutation — insert into likedQuotes
-- `unlike` mutation — delete from likedQuotes
+- `list` query — list saved quotes for current user (desc)
+- `save` mutation — insert into savedQuotes (requires auth)
+- `remove` mutation — delete from savedQuotes (requires auth, ownership check)
+- `listLiked` query — list liked quotes for current user (desc)
+- `like` mutation — insert into likedQuotes (requires auth)
+- `unlike` mutation — delete from likedQuotes (requires auth, ownership check)
+
+Functions in `convex/users.ts`:
+- `me` query — returns current authenticated user or null
 
 ## Key Dependencies
 
-- `convex/react` — `useQuery`, `useMutation` hooks; `ConvexClientProvider` in [app/ConvexClientProvider.tsx](app/ConvexClientProvider.tsx)
-- `lucide-react` — icons (BookmarkIcon, HeartIcon, RefreshCwIcon, TrashIcon, etc.)
+- `@convex-dev/auth` — authentication (Google OAuth), middleware, hooks (`useAuthActions`)
+- `@auth/core` — auth provider implementations (Google)
+- `convex/react` — `useQuery`, `useMutation` hooks; `ConvexReactClient`
+- `next-themes` — dark/light theme toggle via `ThemeProvider` and `ThemeToggle` components
+- `lucide-react` — icons (BookmarkIcon, HeartIcon, RefreshCwIcon, TrashIcon, LogOutIcon, etc.)
 - shadcn/ui — Button, Sidebar, Separator, Sheet, Tooltip, Input, Skeleton components

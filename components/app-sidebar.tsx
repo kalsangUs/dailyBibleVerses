@@ -1,11 +1,16 @@
 "use client";
 
-import { BookOpenIcon, BookmarkIcon, HeartIcon } from "lucide-react";
+import { BookOpenIcon, BookmarkIcon, HeartIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useQuery } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -21,6 +26,8 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const user = useQuery(api.users.me);
+  const { signOut } = useAuthActions();
 
   return (
     <Sidebar>
@@ -41,6 +48,26 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        {user ? (
+          <div className="flex items-center justify-between gap-2 px-2 py-1">
+            <span className="text-sm truncate">{user.name ?? user.email}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void signOut()}
+            >
+              <LogOutIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <div className="px-2 py-1">
+            <Link href="/signin" className="text-sm text-muted-foreground hover:underline">
+              Sign in
+            </Link>
+          </div>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }

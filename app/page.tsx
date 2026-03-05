@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { BookmarkIcon, HeartIcon, RefreshCwIcon } from "lucide-react";
@@ -30,8 +31,10 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [liked, setLiked] = useState(false);
+  const user = useQuery(api.users.me);
   const saveQuote = useMutation(api.quotes.save);
   const likeQuote = useMutation(api.quotes.like);
+  const router = useRouter();
 
   const fetchVerse = useCallback(async () => {
     setLoading(true);
@@ -52,6 +55,10 @@ export default function HomePage() {
 
   const handleSave = async () => {
     if (!verse) return;
+    if (!user) {
+      router.push("/signin");
+      return;
+    }
     await saveQuote({
       book: verse.book,
       chapter: verse.chapter,
@@ -96,6 +103,10 @@ export default function HomePage() {
             disabled={liked}
             onClick={async () => {
               if (!verse) return;
+              if (!user) {
+                router.push("/signin");
+                return;
+              }
               await likeQuote({
                 book: verse.book,
                 chapter: verse.chapter,
