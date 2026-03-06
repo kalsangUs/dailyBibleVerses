@@ -84,9 +84,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex flex-1 flex-col">
       <div className="flex flex-1 items-center justify-center">
-        <div className="max-w-xl px-5 sm:px-8 py-12 text-center">
+        <div className="max-w-xl px-5 sm:px-8 text-center">
           {error ? (
             <div className="text-center">
               <p className="text-lg text-red-600 dark:text-red-400">{error}</p>
@@ -114,7 +114,7 @@ export default function HomePage() {
         </div>
       </div>
       {verse && (
-        <div className="flex items-center justify-center gap-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] mb-4">
+        <div className="flex items-center justify-center gap-2 pb-12">
           <Button variant="outline" size="icon-lg" onClick={fetchVerse} disabled={loading}>
             <RefreshCwIcon className="h-5 w-5" />
           </Button>

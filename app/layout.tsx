@@ -60,7 +60,7 @@ export default function RootLayout({
             >
               <SidebarProvider defaultOpen={false}>
                 <AppSidebar />
-                <main className="flex-1">
+                <main className="flex min-h-dvh flex-1 flex-col">
                   <div className="flex items-center justify-between p-2">
                     <SidebarTrigger />
                     <ThemeToggle />
