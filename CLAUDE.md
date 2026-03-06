@@ -49,7 +49,7 @@ Environment variables needed (in `.env.local`):
 
 Navigation is via a collapsible sidebar ([components/app-sidebar.tsx](components/app-sidebar.tsx)) using shadcn/ui Sidebar, toggled by `SidebarTrigger` in the layout. Sidebar defaults to collapsed. Footer shows current user name/email with sign-out button when authenticated, or a sign-in link otherwise.
 
-Theme toggle ([components/theme-toggle.tsx](components/theme-toggle.tsx)) is fixed-positioned at top-right of the viewport.
+Theme toggle ([components/theme-toggle.tsx](components/theme-toggle.tsx)) and sidebar trigger sit in a flex row at the top of the main content area.
 
 ## Convex Schema
 
@@ -70,6 +70,12 @@ Functions in `convex/quotes.ts`:
 Functions in `convex/users.ts`:
 - `me` query — returns current authenticated user or null
 
+## Layout
+
+The root layout ([app/layout.tsx](app/layout.tsx)) uses `min-h-dvh` on `<main>` with flex column to ensure pages fill the viewport without scrolling. Child pages use `flex-1` to expand into available space. The `viewport-fit=cover` meta tag enables safe area insets for notched devices.
+
+Vercel Analytics (`@vercel/analytics`) and Speed Insights (`@vercel/speed-insights`) are included in the layout.
+
 ## Key Dependencies
 
 - `next` (16.1.6) — App Router framework
@@ -84,3 +90,5 @@ Functions in `convex/users.ts`:
 - `class-variance-authority` — variant-based component styling (used by shadcn/ui)
 - shadcn/ui — Button, Sidebar, Separator, Sheet, Tooltip, Input, Skeleton components
 - `tw-animate-css` (dev) — animation utilities for Tailwind
+- `@vercel/analytics` — Vercel web analytics
+- `@vercel/speed-insights` — Vercel performance monitoring

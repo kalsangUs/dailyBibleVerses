@@ -8,6 +8,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +68,8 @@ export default function RootLayout({
                     <ThemeToggle />
                   </div>
                   {children}
+                   <Analytics />
+                   <SpeedInsights />
                 </main>
               </SidebarProvider>
             </ThemeProvider>
